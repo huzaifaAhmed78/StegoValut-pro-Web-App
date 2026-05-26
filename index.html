@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StegoVault Pro - Advanced Video Steganography</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="logo">
+        <i class="fas fa-shield-alt"></i>
+        <span>StegoVault Pro</span>
+      </div>
+      <nav class="nav">
+        <button class="nav-item active" data-tab="encode">
+          <i class="fas fa-lock"></i>
+          <span>Encode</span>
+        </button>
+        <button class="nav-item" data-tab="decode">
+          <i class="fas fa-unlock"></i>
+          <span>Decode</span>
+        </button>
+        <button class="nav-item" data-tab="batch">
+          <i class="fas fa-layer-group"></i>
+          <span>Batch</span>
+        </button>
+        <button class="nav-item" data-tab="settings">
+          <i class="fas fa-cog"></i>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+      
+      <!-- HEADER -->
+      <header class="header">
+        <div class="header-left">
+          <h1 id="pageTitle">Encode Message</h1>
+          <p id="pageSubtitle">Secure your data in video files</p>
+        </div>
+        <div class="header-right">
+          <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+          <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon" title="Theme Setting"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- ENCODE TAB -->
+      <section id="encode" class="tab-panel active">
+        <div class="grid">
+          <div class="card video-section width">
+            <div class="card-header">
+              <h3><i class="fas fa-video"></i> Video Input</h3>
+            </div>
+            <div class="upload-zone" id="dropArea">
+              <input type="file" id="videoInput" accept="video/*">
+              <div class="upload-content">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <p>Drop video here or <span>click to browse</span></p>
+                <small>Supports MP4, AVI, MOV (Max 500MB)</small>
+              </div>
+              <div class="file-preview" id="filePreview"></div>
+            </div>
+            <div class="progress-container">
+              <div class="progress-bar" id="progressWrapper">
+                <div class="progress-fill" id="progressBar"></div>
+              </div>
+              <span class="progress-text" id="progressText">Ready</span>
+            </div>
+            <video id="preview" controls class="video-preview" style="display: none;"></video>
+          </div>
+
+          <div class="card message-section">
+            <div class="card-header">
+              <h3><i class="fas fa-message"></i> Message</h3>
+            </div>
+            <textarea id="message" class="message" placeholder="Enter your confidential message... (Max 500 chars)" required></textarea>
+            <div class="message-meta">
+              <span id="charCount">0 / 500</span><br><br>
+              <div class="encryption-toggle">
+                <label class="switch">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-primary" onclick="encode()">
+                <i class="fas fa-lock"></i> Embed Message
+              </button>
+              <button class="btn-secondary" onclick="clearAll()">
+                <i class="fas fa-trash"></i> Reset
+              </button>
+            </div>
+            <a id="download" class="download-link" style="display: none;">
+              <i class="fas fa-download"></i> Download Secured Video
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- DECODE TAB -->
+      <section id="decode" class="tab-panel">
+          <div class="grid">
+            
+            <!-- LEFT: VIDEO INPUT -->
+            <div class="card video-section">
+              <div class="card-header">
+                <h3><i class="fas fa-video"></i> Secured Video</h3>
+              </div>
+
+              <div class="upload-zone simple" id="decodeDropArea">
+                <input type="file" id="decodeInput" accept="video/*">
+                <div class="upload-content">
+                  <i class="fas fa-file-video"></i>
+                  <p>Upload secured video</p>
+                </div>
+              </div>
+
+              <div class="decode-results" id="decodeResults"></div>
+
+              <div class="action-buttons" style="margin-top:15px;">
+                <button class="btn-primary" onclick="decode()">
+                  <i class="fas fa-magic"></i> Extract Message
+                </button>
+                <button class="btn-secondary" onclick="clearAll()">
+                <i class="fas fa-trash"></i> Reset
+              </button>
+              </div>
+            </div>
+
+            <!-- RIGHT: MESSAGE OUTPUT -->
+            <div class="card message-section">
+              <div class="card-header">
+                <h3><i class="fas fa-message"></i> Extracted Message</h3>
+              </div>
+
+              <textarea id="result" class="message" readonly
+                placeholder="Extracted message will appear here..."></textarea><br><br>
+
+              <div class="action-buttons">
+                <button class="btn-secondary" onclick="copyText()">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="btn-secondary" onclick="clearResult()">
+                  <i class="fas fa-broom"></i> Clear
+                </button>
+              </div>
+            </div>
+
+          </div>
+      </section>
+
+      <!-- BATCH TAB -->
+<section id="batch" class="tab-panel">
+  <div class="grid">
+
+    <!-- LEFT SIDE (UPLOAD + ACTIONS) -->
+    <div class="card video-section">
+      <div class="card-header">
+        <h3><i class="fas fa-folder-open"></i> Batch Videos</h3>
+      </div>
+
+      <div class="upload-zone" id="batchDropArea">
+        <input type="file" id="batchInput" accept="video/*" multiple>
+        <div class="upload-content">
+          <i class="fas fa-folder-open"></i>
+          <p>Drop multiple videos here</p>
+        </div>
+      </div>
+
+      <br>
+
+      <textarea id="batchMessage" class="message"
+        placeholder="Batch message (same for all files)"></textarea>
+
+      <br><br>
+
+      <div class="action-buttons">
+        <button class="btn-primary" onclick="batchEncode()">
+          <i class="fas fa-lock"></i> Process Batch
+        </button>
+
+        <button class="btn-secondary" onclick="batchDecode()">
+          <i class="fas fa-unlock"></i> Decode
+        </button>
+
+        <button class="btn-secondary" onclick="resetBatch()">
+          <i class="fas fa-broom"></i> Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE (MESSAGES OUTPUT) -->
+    <div class="card message-section">
+      <div class="card-header">
+        <h3><i class="fas fa-message"></i> Batch Messages</h3>
+      </div>
+
+      <!-- 🔥 Multiple message boxes -->
+      <div id="batchResults" style="display:flex; flex-direction:column; gap:10px;" readonly></div>
+
+    </div>
+
+  </div>
+</section>
+      <!-- SETTINGS TAB -->
+<section id="settings" class="tab-panel">
+  <div class="settings-grid">
+
+    <div class="card">
+      <h4>Security</h4>
+
+      <label class="setting-item">
+        <span>Encryption Level</span>
+        <select id="encryptionLevel">
+          <option value="none">None</option>
+          <option value="basic">Basic</option>
+          <option value="strong">Strong (AES-256)</option>
+        </select>
+      </label>
+    </div><br><br>
+
+    <div class="card">
+      <h4>Performance</h4>
+
+      <label class="setting-item">
+        <span>Processing Mode</span>
+        <select id="processingMode">
+          <option value="fast">Fast</option>
+          <option value="balanced" selected>Balanced</option>
+          <option value="secure">Secure</option>
+        </select>
+      </label>
+    </div>
+
+  </div>
+</section>
+    </main>
+  </div>
+  
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast"></div>
+  <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+  <script src="script.js"></script>
+</body>
+</html>
