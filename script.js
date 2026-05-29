@@ -516,3 +516,131 @@ function toggleSidebar() {
   sidebar.classList.toggle('active');
   overlay.classList.toggle('active');
 }
+// ================= SOCKET CONNECTION =================
+const socket = io("http://192.168.100.3:5000");
+socket.on("video-status", (data) => {
+
+  console.log("STATUS RECEIVED:", data);
+
+  stegoVault.showToast(data.message);
+
+});
+
+// ================= USER ID =================
+const username = prompt("Enter Your ID");
+
+socket.emit("register-user", username);
+
+socket.on("receive-video", (video) => {
+
+  console.log("Received Video");
+
+  // receive code...
+
+});
+
+// ================= SHARE VIDEO FUNCTION =================
+async function shareVideo() {
+
+  const file = stegoVault.files['videoInput'];
+
+  if (!file) {
+    stegoVault.showToast('❌ Select video first');
+    return;
+  }
+
+  const receiver = document.getElementById("receiverId").value;
+
+  if (!receiver) {
+    stegoVault.showToast('❌ Enter Receiver ID');
+    return;
+  }
+
+  console.log("Sending Started");
+
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+
+    console.log("File Loaded");
+
+    socket.emit("send-video", {
+
+      to: receiver,
+      name: file.name,
+      type: file.type,
+
+      // 🔥 BUFFER SEND
+      buffer: event.target.result
+
+    });
+
+    console.log("Video Sent");
+
+  };
+
+  // 🔥 IMPORTANT
+  reader.readAsArrayBuffer(file);
+}
+
+// ================= RECEIVE VIDEO =================
+socket.on("receive-video", (video) => {
+
+  console.log("Received Video");
+
+  // AUTO OPEN DECODE TAB
+  document.querySelectorAll('.tab-panel').forEach(p =>
+    p.classList.remove('active')
+  );
+
+  document.querySelectorAll('.nav-item').forEach(n =>
+    n.classList.remove('active')
+  );
+
+  document.getElementById('decode').classList.add('active');
+
+  document.querySelector('[data-tab="decode"]')
+    .classList.add('active');
+
+  // 🔥 BUFFER → BLOB
+  const blob = new Blob(
+    [video.buffer],
+    { type: video.type }
+  );
+
+  const videoURL = URL.createObjectURL(blob);
+
+  const container = document.getElementById("decodeResults");
+
+  container.innerHTML = `
+
+  <div class="received-video-box">
+
+    <video controls playsinline class="received-video">
+      <source src="${videoURL}" type="${video.type}">
+    </video>
+
+    <a href="${videoURL}"
+       download="received_${video.name}"
+       class="download-btn">
+
+       <i class="fas fa-download"></i>
+       Download ${video.name}
+
+    </a>
+
+  </div>
+`;
+
+});
+socket.on("video-sent", () => {
+
+  stegoVault.showToast("✅ Video sent");
+
+});
+
+socket.on("user-not-found", () => {
+
+  stegoVault.showToast("❌ User not found");
+
+});

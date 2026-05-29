@@ -100,10 +100,22 @@
               <button class="btn-secondary" onclick="clearAll()">
                 <i class="fas fa-trash"></i> Reset
               </button>
+              <button class="btn-secondary" onclick="shareVideo()">
+                <i class="fas fa-paper-plane"></i>Send Video
+              </button>
             </div>
             <a id="download" class="download-link" style="display: none;">
               <i class="fas fa-download"></i> Download Secured Video
-            </a>
+            </a><br><br>
+            <input type="text"
+                id="receiverId"
+                placeholder="Enter Receiver ID"
+                style="
+                width:100%;
+                padding:12px;
+                margin-bottom:15px;
+                border-radius:10px;
+                border:none;">
           </div>
         </div>
       </section>
@@ -252,6 +264,7 @@
   <!-- TOAST NOTIFICATION -->
   <div id="toast" class="toast"></div>
   <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
